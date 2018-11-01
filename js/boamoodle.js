@@ -474,7 +474,19 @@ $(function () {
 
                     if (resource.manifest.entrypoint) {
                         if (resource.manifest.alternate) {
-                            finaluri += resource.manifest.alternate[1];
+                            var ifalternate = false;
+                            for (var i = 0; i < resource.manifest.alternate.length; i++) {
+                                if (resource.manifest.alternate[i].indexOf('small') >= 0) {
+                                    finaluri += resource.manifest.alternate[i];
+                                    ifalternate = true;
+                                    break;
+                                }
+                            }
+
+                            if (!ifalternate) {
+                                finaluri += resource.manifest.alternate[0];
+                            }
+
                         }
                         else {
                             finaluri += resource.manifest.entrypoint;

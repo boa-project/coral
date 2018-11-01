@@ -111,7 +111,12 @@
     width: 99%;
 }
 
-.video-item .thumb-box {
+.item-full {
+    border: 1px solid #ccc;
+    margin-top: 20px;
+}
+
+.one-item .thumb-box {
     border-radius: 3px;
     padding: 3px;
     margin: 0 10px 5px 0;
@@ -130,6 +135,7 @@
 .video-item-full video {
     max-width: 99%;
     max-height: 99%;
+    box-shadow: 0 0 7px #aaa;
 }
 
 .item-full .btn-group .btn {
@@ -141,6 +147,9 @@
 .justify-content-between {
   -ms-flex-pack: justify !important;
   justify-content: space-between !important;
+  display: flex;
+  flex-wrap: wrap;
+  padding: .5rem .4rem;
 }
 
 .card-body {

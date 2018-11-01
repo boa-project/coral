@@ -493,6 +493,7 @@ $(function () {
 
     var showOneRecourse = function (data, $searchBox) {
         $searchBox.find('[data-control="show-one"]').empty();
+        $("html, body").animate({ scrollTop: $searchBox.find('[data-control="show-one"]').position().top }, 500);
 
         data.finaluri = boautils.getFinalUri(data);
 
@@ -513,13 +514,12 @@ $(function () {
         loadComments(data.about, $searchBox);
 
         var $submitcomments = $searchBox.find('[data-control="show-one"] .comments-form [type="submit"]');
-        var $namecomments = $searchBox.find('[data-control="show-one"] .comments-form [name="name"]');
         var $contentcomments = $searchBox.find('[data-control="show-one"] .comments-form [name="content"]');
 
         $submitcomments.attr('disabled', true);
 
         var onchangevalid = function() {
-            if ($.trim($namecomments) == '' || $.trim($contentcomments.val()) == '') {
+            if ($.trim($contentcomments.val()) == '') {
                 $submitcomments.attr('disabled', true);
             }
             else {
@@ -527,17 +527,15 @@ $(function () {
             }
         };
 
-        $namecomments.on('input propertychange paste', onchangevalid);
         $contentcomments.on('input propertychange paste', onchangevalid);
 
         $submitcomments.on('click', function() {
             var commentdata = {
-                "name": $.trim($namecomments.val()),
+                "name": $.trim($('.usertext').text().replace($('.usertext .meta').text(), '')),
                 "content": $.trim($contentcomments.val())
             };
 
             $.post(data.about + '/comments', commentdata, function() {
-                $namecomments.val('');
                 $contentcomments.val('');
                 loadComments(data.about, $searchBox);
             });

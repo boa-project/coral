@@ -676,7 +676,7 @@ $(function () {
                             var $this = $(this);
 
                             $.get($this.attr('boa-href'), function(data) {
-                                showOneRecourse(data);
+                                showOneRecourse(data, $_this);
                             });
                         });
                     });

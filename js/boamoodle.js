@@ -501,7 +501,7 @@ $(function () {
         if (data.metadata.technical.format.indexOf('audio') > -1) {
             $tpl = $('#boa-tpl-audio-item-full');
         }
-        if (data.metadata.technical.format.indexOf('video') > -1) {
+        else if (data.metadata.technical.format.indexOf('video') > -1) {
             $tpl = $('#boa-tpl-video-item-full');
         }
         else {
@@ -589,7 +589,10 @@ $(function () {
                 var $tplcomment = $('#boa-tpl-comments-item');
                 var ago = Math.floor(Date.now() / 1000) - Number(comment.updated_at);
 
-                if (ago <= 60) {
+                if (ago <= 0) {
+                    ago = ' pocos segundos';
+                }
+                else if (ago <= 60) {
                     ago = ago + ' segundos';
                 }
                 else if (ago <= 60 * 60) {

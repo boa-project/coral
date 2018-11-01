@@ -239,7 +239,7 @@ $(function () {
 
             printResultSearch: function(data) {
                 if (typeof($boasearch.conf.events.onfound) == 'function') {
-                    $boasearch.conf.events.onfound(data);
+                    $boasearch.conf.events.onfound(data, startRecord);
                 }
                 else {
                     if ($boasearch.conf.results.target) {
@@ -655,7 +655,7 @@ $(function () {
                         $searchResult.find('> .boa-content').empty();
                     }
                 },
-                onfound: function(data) {
+                onfound: function(data, start) {
 
                     console.log('Encontrados: ' + data.length + ' resultados');
 
@@ -666,6 +666,19 @@ $(function () {
 
                     if (data.length === 0 || data.length < resultsSize) {
                         $searchResult.find('> button').hide();
+                    }
+
+                    if (start == 0) {
+                        $searchBox.find('[data-control="show-one"]').empty();
+                    }
+
+                    if (data.length === 0 && start == 0) {
+                        $target.empty();
+
+                        var $tpl = $('#boa-tpl-error-item');
+                        var $node = $tpl.tmpl( { "message" : "No se encontraron resultados" } );
+                        $target.append($node);
+                        return;
                     }
 
                     var $tpl = $('#boa-tpl-item');

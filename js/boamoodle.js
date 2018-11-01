@@ -669,10 +669,10 @@ $(function () {
                     }
 
                     if (start == 0) {
-                        $searchBox.find('[data-control="show-one"]').empty();
+                        $_this.find('[data-control="show-one"]').empty();
                     }
 
-                    if (data.length === 0 && start == 0) {
+                    if ((!data || data.length === 0) && start == 0) {
                         $target.empty();
 
                         var $tpl = $('#boa-tpl-error-item');

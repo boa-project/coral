@@ -473,7 +473,12 @@ $(function () {
                     finaluri = resource.about + options.resourcesSlice;
 
                     if (resource.manifest.entrypoint) {
-                        finaluri += resource.manifest.entrypoint;
+                        if (resource.manifest.alternate) {
+                            finaluri += resource.manifest.alternate[1];
+                        }
+                        else {
+                            finaluri += resource.manifest.entrypoint;
+                        }
                     }
                 }
 
@@ -504,6 +509,111 @@ $(function () {
 
         var $item = $tpl.tmpl(data);
         $searchBox.find('[data-control="show-one"]').append($item);
+
+        loadComments(data.about, $searchBox);
+
+        var $submitcomments = $searchBox.find('[data-control="show-one"] .comments-form [type="submit"]');
+        var $namecomments = $searchBox.find('[data-control="show-one"] .comments-form [name="name"]');
+        var $contentcomments = $searchBox.find('[data-control="show-one"] .comments-form [name="content"]');
+
+        $submitcomments.attr('disabled', true);
+
+        var onchangevalid = function() {
+            if ($.trim($namecomments) == '' || $.trim($contentcomments.val()) == '') {
+                $submitcomments.attr('disabled', true);
+            }
+            else {
+                $submitcomments.attr('disabled', false);
+            }
+        };
+
+        $namecomments.on('input propertychange paste', onchangevalid);
+        $contentcomments.on('input propertychange paste', onchangevalid);
+
+        $submitcomments.on('click', function() {
+            var commentdata = {
+                "name": $.trim($namecomments.val()),
+                "content": $.trim($contentcomments.val())
+            };
+
+            $.post(data.about + '/comments', commentdata, function() {
+                $namecomments.val('');
+                $contentcomments.val('');
+                loadComments(data.about, $searchBox);
+            });
+
+            return false;
+        });
+
+        $item.find('[boa-action]').on('click', function() {
+            var $this = $(this);
+            var $parent = $($this.parents('.item-full')[0]);
+            var action = $this.attr('boa-action');
+
+            if (action == 'like' || action == 'dislike') {
+
+                var params = action == 'like' ? {} : { value: 0 };
+
+                $parent.find('.likegroup .active').removeClass('active');
+
+                $.post($parent.attr('boa-about') + '/scores', params, function(data) {})
+                .done(function() {
+                    $this.addClass('active');
+                });
+
+            }
+            else if (action == 'open') {
+                window.open(data.finaluri, '_blank');
+            }
+        });
+    };
+
+    var loadComments = function(baseuri, $searchBox) {
+        $.get(baseuri + '/comments', function(comments) {
+            showComments(comments, $searchBox);
+        });
+    };
+
+    var showComments = function(comments, $searchBox) {
+        var $box = $searchBox.find('[data-control="show-one"] .comments-box');
+        var $list = $box.find('.comments-list');
+        var $msg = $box.find('.alert');
+        $list.empty();
+
+        if (comments.length == 0) {
+            $msg.show().html('Aún no hay comentarios.');
+            $list.hide();
+        }
+        else {
+            $msg.hide();
+            $list.show();
+            $.each(comments, function(i, comment) {
+                var $tplcomment = $('#boa-tpl-comments-item');
+                var ago = Math.floor(Date.now() / 1000) - Number(comment.updated_at);
+
+                if (ago <= 60) {
+                    ago = ago + ' segundos';
+                }
+                else if (ago <= 60 * 60) {
+                    ago = Math.floor(ago / 60) + ' minutos';
+                }
+                else if (ago <= 60 * 60 * 24) {
+                    ago = Math.floor(ago / (60 * 60)) + ' horas';
+                }
+                else {
+                    ago = Math.floor(ago / (60 * 60 * 24)) + ' dias';
+                }
+
+                var datacomment = {
+                    "name": comment.owner,
+                    "ago": 'Hace ' + ago,
+                    "content": comment.content
+                };
+
+                var $item = $tplcomment.tmpl(datacomment);
+                $list.append($item);
+            });
+        }
     };
 
     $('.boa-box').each(function() {
@@ -519,7 +629,7 @@ $(function () {
                 { name: 'Engagement', key: 'engagement'},
             ],
             filters: [
-                { meta: 'manifest.is_a', value: ['dro'] }
+                { meta: 'metadata.technical.format', value: ['video', 'audio'] }
             ],
             options: { cacheLife: 0 },
             debug: true,
@@ -545,8 +655,7 @@ $(function () {
                         $searchResult.find('> button').hide();
                     }
 
-                    var $tpl = $('#boa-tpl-video-item');
-                    var $tplopen = $('#boa-tpl-open-item');
+                    var $tpl = $('#boa-tpl-item');
 
                     $.each(data, function(k, item) {
                         if (item.manifest.conexion_type == 'external') {
@@ -560,23 +669,16 @@ $(function () {
                             }
                         }
 
-                        var $item;
-                        if (item.metadata.technical.format.indexOf('video') > -1) {
-                            $item = $tpl.tmpl(item);
-
-                            $item.find('[boa-href]').on('click', function() {
-                                var $this = $(this);
-
-                                $.get($this.attr('boa-href'), function(data) {
-                                    showOneRecourse(data, $_this);
-                                });
-                            });
-                        }
-                        else {
-                            $item = $tplopen.tmpl(item);
-                        }
-
+                        var $item = $tpl.tmpl(item);
                         $item.appendTo($target);
+
+                        $item.find('[boa-href]').on('click', function() {
+                            var $this = $(this);
+
+                            $.get($this.attr('boa-href'), function(data) {
+                                showOneRecourse(data);
+                            });
+                        });
                     });
                 },
                 onerror: function(error) {

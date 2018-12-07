@@ -142,6 +142,10 @@
     border-radius: 10px;
 }
 
+.pdf-item-full iframe {
+    width: 100%;
+    min-height: 400px;
+}
 
 /**BOOTSTRAP CSS*/
 .justify-content-between {

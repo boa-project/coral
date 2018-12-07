@@ -516,6 +516,9 @@ $(function () {
         else if (data.metadata.technical.format.indexOf('video') > -1) {
             $tpl = $('#boa-tpl-video-item-full');
         }
+        else if (data.metadata.technical.format.indexOf('pdf') > -1) {
+            $tpl = $('#boa-tpl-pdf-item-full');
+        }
         else {
             return;
         }
@@ -639,10 +642,10 @@ $(function () {
         $boaSearch.boasearch({
             apiuri: 'http://uri-to-boa-site/api',
             catalogues: [
-                { name: 'Engagement', key: 'engagement'},
+                { name: 'Banco principal', key: 'banco-principal'},
             ],
             filters: [
-                { meta: 'metadata.technical.format', value: ['video', 'audio'] }
+                { meta: 'metadata.technical.format', value: ['video', 'audio', 'pdf'] }
             ],
             options: { cacheLife: 0 },
             debug: true,

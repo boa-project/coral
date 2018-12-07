@@ -405,6 +405,10 @@ $(function () {
             $boasearch.search();
         };
 
+        $boasearch.restart = function() {
+            startRecord = 0;
+        };
+
         //BoA: Initialize
         methods.init();
     };
@@ -452,6 +456,7 @@ $(function () {
                 case "search": $boasearch.search(); break;
                 case "nextsearch": $boasearch.searchMore(); break;
                 case "option": return $boasearch.conf.options[paramval]; break;
+                case "restart": $boasearch.restart(); break;
             }
         }
     };
@@ -640,13 +645,9 @@ $(function () {
         var $boaSearch = $_this.find('[data-control="search-text"]');
 
         $boaSearch.boasearch({
-            apiuri: 'http://uri-to-boa-site/api',
-            catalogues: [
-                { name: 'Banco principal', key: 'banco-principal'},
-            ],
-            filters: [
-                { meta: 'metadata.technical.format', value: ['video', 'audio', 'pdf'] }
-            ],
+            apiuri: BoA.Global.ApiUri,
+            catalogues: BoA.Global.Catalogues,
+            filters: BoA.Global.Filters,
             options: { cacheLife: 0 },
             debug: true,
             events: {
@@ -669,6 +670,9 @@ $(function () {
 
                     if (data.length === 0 || data.length < resultsSize) {
                         $searchResult.find('> button').hide();
+                    }
+                    else {
+                        $searchResult.find('> button').show();
                     }
 
                     if (start == 0) {
@@ -730,6 +734,8 @@ $(function () {
         });
 
         $_this.find('[data-control="search-button"]').on('click', function(){
+            $searchResult.find('> .boa-content').empty();
+            $boaSearch.boasearch('restart');
             $boaSearch.boasearch('search');
         });
 

@@ -508,7 +508,7 @@ $(function () {
 
     var boautils = fn_boautils();
 
-    var showOneRecourse = function (data, $searchBox) {
+    var showOneResourse = function (data, $searchBox) {
         $searchBox.find('[data-control="show-one"]').empty();
         $("html, body").animate({ scrollTop: $searchBox.find('[data-control="show-one"]').position().top }, 500);
 
@@ -644,10 +644,21 @@ $(function () {
         var $errorBox = $_this.find('[data-control="errors-box"]');
         var $boaSearch = $_this.find('[data-control="search-text"]');
 
+        var searcher = BoA.Global.Searchers[0];
+        var searchername = $($_this).attr('data-searcher');
+        if (typeof searchername !== typeof undefined && searchername !== false) {
+            for (var i in BoA.Global.Searchers) {
+                if (BoA.Global.Searchers[i].Name == searchername) {
+                    searcher = BoA.Global.Searchers[i];
+                    break;
+                }
+            }
+        }
+
         $boaSearch.boasearch({
             apiuri: BoA.Global.ApiUri,
-            catalogues: BoA.Global.Catalogues,
-            filters: BoA.Global.Filters,
+            catalogues: searcher.Catalogues,
+            filters: searcher.Filters,
             options: { cacheLife: 0 },
             debug: true,
             events: {
@@ -709,7 +720,7 @@ $(function () {
                             var $this = $(this);
 
                             $.get($this.attr('boa-href'), function(data) {
-                                showOneRecourse(data, $_this);
+                                showOneResourse(data, $_this);
                             });
                         });
                     });

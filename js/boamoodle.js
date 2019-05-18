@@ -478,8 +478,9 @@ $(function () {
                     finaluri = resource.about + options.resourcesSlice;
 
                     if (resource.manifest.entrypoint) {
-                        if (resource.manifest.alternate) {
-                            var ifalternate = false;
+                        var ifalternate = false;
+
+                        if (resource.manifest.alternate && resource.manifest.alternate.length > 0) {
                             for (var i = 0; i < resource.manifest.alternate.length; i++) {
                                 if (resource.manifest.alternate[i].indexOf('small') >= 0) {
                                     finaluri += resource.manifest.alternate[i];
@@ -493,7 +494,8 @@ $(function () {
                             }
 
                         }
-                        else {
+
+                        if (!ifalternate) {
                             finaluri += resource.manifest.entrypoint;
                         }
                     }
@@ -510,7 +512,6 @@ $(function () {
 
     var showOneResourse = function (data, $searchBox) {
         $searchBox.find('[data-control="show-one"]').empty();
-        $("html, body").animate({ scrollTop: $searchBox.find('[data-control="show-one"]').position().top }, 500);
 
         data.finaluri = boautils.getFinalUri(data);
 
@@ -525,8 +526,11 @@ $(function () {
             $tpl = $('#boa-tpl-pdf-item-full');
         }
         else {
+            window.open(data.finaluri, '_blank');
             return;
         }
+
+        $("html, body").animate({ scrollTop: $searchBox.find('[data-control="show-one"]').position().top }, 500);
 
         var $item = $tpl.tmpl(data);
         $searchBox.find('[data-control="show-one"]').append($item);

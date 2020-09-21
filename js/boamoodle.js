@@ -15,6 +15,8 @@
 
 'use strict';
 
+var XXX;
+
 $(function () {
 
     $.boasearch = function(el, params) {
@@ -451,12 +453,27 @@ $(function () {
         }
         else {
 
-            var $boasearch = $(this).data('boasearch');
-            switch (params) {
-                case "search": $boasearch.search(); break;
-                case "nextsearch": $boasearch.searchMore(); break;
-                case "option": return $boasearch.conf.options[paramval]; break;
-                case "restart": $boasearch.restart(); break;
+            var $boasearch;
+
+            if ('data' in this) {
+                $boasearch = this.data('boasearch');
+            } else {
+
+                if ('data' in $(this)) {
+                    $boasearch = $(this).data('boasearch');
+                }
+            }
+
+            if ($boasearch) {
+
+                switch (params) {
+                    case "search": $boasearch.search(); break;
+                    case "nextsearch": $boasearch.searchMore(); break;
+                    case "option": return $boasearch.conf.options[paramval]; break;
+                    case "restart": $boasearch.restart(); break;
+                }
+            } else {
+                console.log('Error in boasearch object');
             }
         }
     };

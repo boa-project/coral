@@ -15,8 +15,6 @@
 
 'use strict';
 
-var XXX;
-
 $(function () {
 
     $.boasearch = function(el, params) {
